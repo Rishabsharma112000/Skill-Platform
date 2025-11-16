@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4000"; // Fallback for development if .env is not configured.
+const API_BASE_URL = "https://skill-platform-production-808e.up.railway.app/"; // Fallback for development if .env is not configured.
 // IMPORTANT: Please create a .env file in the portal_frontend_app directory with:
 // REACT_APP_FRONTEND_URL=http://localhost:4000
 // (or your actual backend URL)
