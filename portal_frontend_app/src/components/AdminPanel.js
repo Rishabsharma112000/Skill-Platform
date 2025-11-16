@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import QuestionManagement from './QuestionManagement';
 import UserReports from './UserReports'; 
-import { AuthContext } from '../context/AuthContext';
 
 const AdminPanel = () => {
   const [showQuestionManagement, setShowQuestionManagement] = useState(() => {

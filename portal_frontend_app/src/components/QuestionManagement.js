@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios'; 
 import { AuthContext } from '../context/AuthContext';
 import API_ROUTES from '../config/api';
@@ -16,11 +16,7 @@ const QuestionManagement = () => {
   const [correctOptionIndex, setCorrectOptionIndex] = useState(0);
   const [selectedSkill, setSelectedSkill] = useState('');
 
-  useEffect(() => {
-    fetchData();
-  }, [token, fetchData]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -42,7 +38,11 @@ const QuestionManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
