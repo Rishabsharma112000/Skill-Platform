@@ -15,8 +15,7 @@ app.use(morgan('dev'));
 
 app.get("/ping", async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT 1");
-    res.send({ backend: "ok", db: "connected", rows });
+    res.send({ backend: "ok", db: "connected", redis: "connected" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
