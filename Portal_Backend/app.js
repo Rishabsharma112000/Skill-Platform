@@ -31,7 +31,7 @@ const MYSQL_HOST = process.env.MYSQL_HOST || 'localhost';
 const MYSQL_USER = process.env.MYSQL_USER || 'root';
 const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD || "1234";
 const MYSQL_DATABASE = process.env.MYSQL_DATABASE || 'skill_portal';
-const DB_INIT_SCRIPT = './db/init.sql'; // Path to SQL initialization script
+// const DB_INIT_SCRIPT = './db/init.sql'; // Path to SQL initialization script
 
 async function connectToDatabase() {
   try {
@@ -45,9 +45,9 @@ async function connectToDatabase() {
     console.log('MySQL connected');
 
     // Here Read and execute the database initialization script
-    const initSql = await fs.readFile(DB_INIT_SCRIPT, 'utf8');
-    await connection.query(initSql);
-    console.log('Database schema initialized or updated.');
+    // const initSql = await fs.readFile(DB_INIT_SCRIPT, 'utf8');
+    // await connection.query(initSql);
+    // console.log('Database schema initialized or updated.');
 
     return connection;
   } catch (err) {
