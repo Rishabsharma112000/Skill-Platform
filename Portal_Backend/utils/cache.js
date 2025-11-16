@@ -15,7 +15,7 @@ async function initRedis() {
     });
 
     client.on("error", (err) => {
-      console.warn("Redis error:", err.message);
+      console.warn("Redis error:", err);
       redisAvailable = false;
     });
 
