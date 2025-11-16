@@ -1,42 +1,47 @@
+const API_BASE_URL = process.env.REACT_APP_FRONTEND_URL || "http://localhost:4000"; // Fallback for development if .env is not configured.
+// IMPORTANT: Please create a .env file in the portal_frontend_app directory with:
+// REACT_APP_FRONTEND_URL=http://localhost:4000
+// (or your actual backend URL)
+
 const API_ROUTES = {
   AUTH: {
-    REGISTER: '/api/auth/register',
-    LOGIN: '/api/auth/login',
+    REGISTER: `${API_BASE_URL}/api/auth/register`,
+    LOGIN: `${API_BASE_URL}/api/auth/login`,
   },
   USERS: {
-    GET_ALL: '/api/users',
-    GET_ME: '/api/users/me',
-    UPDATE_ME: '/api/users/me',
-    CHANGE_MY_PASSWORD: '/api/users/me/password',
-    GET_BY_ID: (id) => `/api/users/${id}`,
-    UPDATE_BY_ID: (id) => `/api/users/${id}`,
-    DELETE_BY_ID: (id) => `/api/users/${id}`,
+    GET_ALL: `${API_BASE_URL}/api/users`,
+    GET_ME: `${API_BASE_URL}/api/users/me`,
+    UPDATE_ME: `${API_BASE_URL}/api/users/me`,
+    CHANGE_MY_PASSWORD: `${API_BASE_URL}/api/users/me/password`,
+    GET_BY_ID: (id) => `${API_BASE_URL}/api/users/${id}`,
+    UPDATE_BY_ID: (id) => `${API_BASE_URL}/api/users/${id}`,
+    DELETE_BY_ID: (id) => `${API_BASE_URL}/api/users/${id}`,
   },
   SKILLS: {
-    CREATE: '/api/skills',
-    GET_ALL: '/api/skills',
-    GET_WITH_QUESTIONS: '/api/skills-with-questions',
-    GET_BY_ID: (id) => `/api/skills/${id}`,
-    UPDATE_BY_ID: (id) => `/api/skills/${id}`,
-    DELETE_BY_ID: (id) => `/api/skills/${id}`,
+    CREATE: `${API_BASE_URL}/api/skills`,
+    GET_ALL: `${API_BASE_URL}/api/skills`,
+    GET_WITH_QUESTIONS: `${API_BASE_URL}/api/skills-with-questions`,
+    GET_BY_ID: (id) => `${API_BASE_URL}/api/skills/${id}`,
+    UPDATE_BY_ID: (id) => `${API_BASE_URL}/api/skills/${id}`,
+    DELETE_BY_ID: (id) => `${API_BASE_URL}/api/skills/${id}`,
   },
   QUESTIONS: {
-    CREATE: '/api/questions',
-    GET_ALL: '/api/questions',
-    GET_BY_ID: (id) => `/api/questions/${id}`,
-    UPDATE_BY_ID: (id) => `/api/questions/${id}`,
-    DELETE_BY_ID: (id) => `/api/questions/${id}`,
+    CREATE: `${API_BASE_URL}/api/questions`,
+    GET_ALL: `${API_BASE_URL}/api/questions`,
+    GET_BY_ID: (id) => `${API_BASE_URL}/api/questions/${id}`,
+    UPDATE_BY_ID: (id) => `${API_BASE_URL}/api/questions/${id}`,
+    DELETE_BY_ID: (id) => `${API_BASE_URL}/api/questions/${id}`,
   },
   QUIZZES: {
-    START: (skillId) => `/api/skills/${skillId}/quiz`,
-    SUBMIT_ATTEMPT: '/api/quizzes/attempt',
-    GET_HISTORY: '/api/quizzes/history',
+    START: (skillId) => `${API_BASE_URL}/api/skills/${skillId}/quiz`,
+    SUBMIT_ATTEMPT: `${API_BASE_URL}/api/quizzes/attempt`,
+    GET_HISTORY: `${API_BASE_URL}/api/quizzes/history`,
   },
   REPORTS: {
-    GET_USER_PERFORMANCE: (userId) => `/api/reports/users/${userId}/performance`,
-    GET_MY_PERFORMANCE: '/api/reports/me/performance',
-    GET_SKILL_GAP: '/api/reports/skill-gap',
-    GET_TIME_BASED: '/api/reports/time-based',
+    GET_USER_PERFORMANCE: (userId) => `${API_BASE_URL}/api/reports/users/${userId}/performance`,
+    GET_MY_PERFORMANCE: `${API_BASE_URL}/api/reports/me/performance`,
+    GET_SKILL_GAP: `${API_BASE_URL}/api/reports/skill-gap`,
+    GET_TIME_BASED: `${API_BASE_URL}/api/reports/time-based`,
   },
 };
 
