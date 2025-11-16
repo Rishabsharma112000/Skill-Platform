@@ -10,7 +10,8 @@ async function initRedis() {
       port: process.env.REDIS_PORT || 6379,
       socket: {
         reconnectStrategy: (retries) => Math.min(retries * 50, 500)
-      }
+      },
+      password: process.env.REDIS_PASSWORD || undefined
     });
 
     client.on('error', (err) => {
