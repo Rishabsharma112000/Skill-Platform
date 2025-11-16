@@ -13,6 +13,15 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+app.get("/ping", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT 1");
+    res.send({ backend: "ok", db: "connected", rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.use('/api', routes);
 
 app.use(errorHandler);
@@ -36,9 +45,9 @@ async function connectToDatabase() {
     console.log('MySQL connected');
 
     // Here Read and execute the database initialization script
-    // const initSql = await fs.readFile(DB_INIT_SCRIPT, 'utf8');
-    // await connection.query(initSql);
-    // console.log('Database schema initialized or updated.');
+    const initSql = await fs.readFile(DB_INIT_SCRIPT, 'utf8');
+    await connection.query(initSql);
+    console.log('Database schema initialized or updated.');
 
     return connection;
   } catch (err) {

@@ -1,0 +1,51 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: skill_portal_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./Portal_Backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - skill_portal_network
+
+  redis:
+    image: redis
+    container_name: skill_portal_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - skill_portal_network
+
+  backend:
+    build:
+      context: ./Portal_Backend
+      dockerfile: Dockerfile
+    container_name: skill_portal_backend
+    ports:
+      - "4000:4000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - skill_portal_network
+
+volumes:
+  mysql_data:
+
+networks:
+  skill_portal_network:
+    driver: bridge

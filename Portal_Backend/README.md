@@ -67,6 +67,24 @@ This is the backend for the Skill Portal application, built with Node.js and Exp
 
 ## Running the Application
 
+To run the backend application with Docker Compose (recommended):
+
+```bash
+cd ../..
+docker-compose up --build
+```
+
+This will build the backend Docker image, and start the MySQL, Redis, and backend services. The backend server will be accessible at `http://localhost:4000`.
+
+To stop the Docker Compose services:
+
+```bash
+cd ../..
+docker-compose down
+```
+
+To run the backend application directly (without Docker):
+
 ```bash
 npm start
 ```
