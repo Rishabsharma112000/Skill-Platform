@@ -24,7 +24,7 @@ const authService = {
     }
     const ok = await User.comparePassword(password, user.password);
     if (!ok) {
-      throw new Error('Invalid credentials');
+      throw new Error('Invalid password');
     }
     const token = signToken(user);
     return { token, user: { id: user.id, name: user.name, email: user.email, role: user.role } };
