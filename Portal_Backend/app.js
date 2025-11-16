@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const errorHandler = require('./middleware/error.middleware');
 const routes = require('./routes');
-const { initRedis } = require('./utils/cache');
+const { initRedis } = require('./utils/redis');
 
 const app = express();
 app.use(cors());

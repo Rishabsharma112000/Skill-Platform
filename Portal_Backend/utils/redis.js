@@ -5,11 +5,6 @@ let redisAvailable = false;
 
 async function initRedis() {
   try {
-    console.log("REDIS ENV:", {
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
-  password: process.env.REDIS_PASSWORD ? "*" : null
-});
     client = redis.createClient({
       socket: {
         host: process.env.REDIS_HOST || "127.0.0.1",
@@ -20,7 +15,7 @@ async function initRedis() {
     });
 
     client.on("error", (err) => {
-      console.warn("Redis error:", err);
+      console.warn("Redis error:", err.message);
       redisAvailable = false;
     });
 
@@ -40,7 +35,6 @@ async function initRedis() {
   }
 }
 
-/* ---------- In-memory fallback cache ---------- */
 
 const memoryCache = new Map();
 
@@ -54,7 +48,6 @@ async function getCache(key) {
     }
   }
 
-  // fallback to memory cache
   const cached = memoryCache.get(key);
   if (cached && cached.expiry > Date.now()) {
     return cached.value;
