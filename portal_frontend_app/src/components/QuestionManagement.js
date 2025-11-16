@@ -18,7 +18,7 @@ const QuestionManagement = () => {
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, [token, fetchData]);
 
   const fetchData = async () => {
     try {
@@ -54,7 +54,7 @@ const QuestionManagement = () => {
     event.preventDefault();
     setError(null);
     try {
-      const response = await axios.post(API_ROUTES.QUESTIONS.CREATE, {
+      await axios.post(API_ROUTES.QUESTIONS.CREATE, {
         questionText,
         options: options.map((opt, idx) => ({ text: opt, isCorrect: idx === correctOptionIndex })),
         skillId: selectedSkill,
@@ -86,7 +86,7 @@ const QuestionManagement = () => {
     event.preventDefault();
     setError(null);
     try {
-      const response = await axios.put(API_ROUTES.QUESTIONS.UPDATE_BY_ID(currentQuestion.id), {
+        await axios.put(API_ROUTES.QUESTIONS.UPDATE_BY_ID(currentQuestion.id), {
         questionText,
         options: options.map((opt, idx) => ({ text: opt, isCorrect: idx === correctOptionIndex })),
         skillId: selectedSkill,
@@ -110,7 +110,7 @@ const QuestionManagement = () => {
   const handleDeleteQuestion = async (questionId) => {
     setError(null);
     try {
-      const response = await axios.delete(API_ROUTES.QUESTIONS.DELETE_BY_ID(questionId), {
+        await axios.delete(API_ROUTES.QUESTIONS.DELETE_BY_ID(questionId), {
         headers: {
           Authorization: `Bearer ${token}`,
         },

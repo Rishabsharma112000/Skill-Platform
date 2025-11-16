@@ -2,15 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import QuestionManagement from './QuestionManagement';
 import UserReports from './UserReports'; 
 import { AuthContext } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
 
 const AdminPanel = () => {
   const [showQuestionManagement, setShowQuestionManagement] = useState(() => {
     const storedView = localStorage.getItem('adminPanelView');
     return storedView === 'userReports' ? false : true; 
   });
-
-  const { user, role, logout } = useContext(AuthContext);
 
   useEffect(() => {
     localStorage.setItem('adminPanelView', showQuestionManagement ? 'questionManagement' : 'userReports');
