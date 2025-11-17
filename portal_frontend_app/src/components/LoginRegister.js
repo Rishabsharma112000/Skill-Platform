@@ -33,6 +33,7 @@ const LoginRegister = () => {
         ? { email, password }
         : { name: username, email, password }; 
 
+        console.log("This is the url" , url);
       const response = await axios.post(url, body);
 
       login(response.data.token, response.data.user);
