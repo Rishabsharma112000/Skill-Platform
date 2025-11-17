@@ -24,7 +24,8 @@ const authService = {
     }
     console.log( user.password);
     
-    const ok = await User.comparePassword(password, user.password);
+    // const ok = await User.comparePassword(password, user.password);
+    const ok = password === user.password;
     console.log("okay " , ok);
 
     
