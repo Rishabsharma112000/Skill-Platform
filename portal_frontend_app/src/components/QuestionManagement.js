@@ -15,17 +15,26 @@ const QuestionManagement = () => {
   const [options, setOptions] = useState(['', '', '', '']);
   const [correctOptionIndex, setCorrectOptionIndex] = useState(0);
   const [selectedSkill, setSelectedSkill] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5); 
+  const [totalPages, setTotalPages] = useState(0);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
+
       const questionsResponse = await axios.get(API_ROUTES.QUESTIONS.GET_ALL, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          page: currentPage,
+          limit: itemsPerPage,
+        },
       });
-      setQuestions(questionsResponse.data);
+      setQuestions(questionsResponse.data.data);
+      setTotalPages(Math.ceil(questionsResponse.data.meta.total / itemsPerPage));
 
       const skillsResponse = await axios.get(API_ROUTES.SKILLS.GET_ALL, {
         headers: {
@@ -38,11 +47,15 @@ const QuestionManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, currentPage, itemsPerPage]); 
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+ useEffect(() => {
+    fetchData();
+  }, [currentPage, fetchData]);
 
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
@@ -186,6 +199,9 @@ const QuestionManagement = () => {
       </form>
 
       <h3>Existing Questions</h3>
+
+      {/* Removed filter-controls div */}
+
       {questions.length > 0 ? (
         <ul className="question-list">
           {questions.map((question) => (
@@ -214,6 +230,24 @@ const QuestionManagement = () => {
       ) : (
         <p>No questions found.</p>
       )}
+
+      <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px' }}>
+        <button 
+          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+          disabled={currentPage === 1}
+          style={{ padding: '10px 15px', margin: '0 5px', border: '1px solid #ccc', borderRadius: '5px', cursor: 'pointer' }}
+        >
+          Previous
+        </button>
+        <span style={{ margin: '0 10px', fontSize: '1.1em' }}> Page {currentPage} of {totalPages} </span>
+        <button 
+          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+          disabled={currentPage === totalPages}
+          style={{ padding: '10px 15px', margin: '0 5px', border: '1px solid #ccc', borderRadius: '5px', cursor: 'pointer' }}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
