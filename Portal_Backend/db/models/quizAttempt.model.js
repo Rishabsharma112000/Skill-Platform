@@ -70,46 +70,49 @@ class QuizAttempt {
   }
 
   static async getUserPerformance(userId) {
-    const cacheKey = `report:userPerformance:${userId}`;
-    
-    const cachedResult = await redisClient.get(cacheKey);
-    if (cachedResult) {
-      return JSON.parse(cachedResult);
-    }
-
     const [rows] = await pool.execute(
-      'SELECT s.name as skill_name, AVG(qa.percentage) as average_percentage FROM quiz_attempts qa JOIN skills s ON qa.skill_id = s.id WHERE qa.user_id = ? GROUP BY s.name',
+      `SELECT
+        s.name as skill_name,
+        COUNT(qa.id) as total_quizzes,
+        SUM(CASE WHEN qa.passed = TRUE THEN 1 ELSE 0 END) as passed_quizzes,
+        AVG(qa.score) as average_score
+      FROM skills s
+      LEFT JOIN quiz_attempts qa ON s.id = qa.skill_id AND qa.user_id = ?
+      GROUP BY s.id
+      ORDER BY s.name`,
       [userId]
     );
-    await redisClient.setEx(cacheKey, 3600, JSON.stringify(rows)); 
-    return { skillPerformance: rows.map(row => ({ ...row, averageScore: row.average_percentage })) };
-  }
 
-  static async getSkillGapReport() {
-    const cacheKey = 'report:skillGap';
-    
-    const cachedResult = await redisClient.get(cacheKey);
-    if (cachedResult) {
-      return JSON.parse(cachedResult);
-    }
-
-    const [rows] = await pool.execute(
-      'SELECT s.name as skill_name, AVG(qa.percentage) as average_percentage_across_users FROM quiz_attempts qa JOIN skills s ON qa.skill_id = s.id GROUP BY s.name',
-      []
-    );
-    
-    await redisClient.setEx(cacheKey, 3600, JSON.stringify(rows));
     return rows;
   }
 
-  static async getTimeBasedReport(timeframe = 'month') {
-    const cacheKey = `report:timeBased:${timeframe}`;
-    
-    const cachedResult = await redisClient.get(cacheKey);
-    if (cachedResult) {
-      return JSON.parse(cachedResult);
-    }
+  static async getSkillGapReport(userId) {
+    const [rows] = await pool.execute(
+      `SELECT
+        s.id as skill_id,
+        s.name as skill_name,
+        AVG(qa.score) as average_score,
+        COUNT(DISTINCT q.id) as total_questions_in_skill,
+        COUNT(DISTINCT CASE WHEN a.is_correct = TRUE THEN a.question_id ELSE NULL END) as correct_answers,
+        GROUP_CONCAT(DISTINCT CASE WHEN a.is_correct = FALSE THEN q.text ELSE NULL END) as weak_topics
+      FROM skills s
+      LEFT JOIN questions q ON s.id = q.skill_id
+      LEFT JOIN quiz_attempts qa ON s.id = qa.skill_id AND qa.user_id = ?
+      LEFT JOIN answers a ON qa.id = a.attempt_id AND a.user_id = ?
+      WHERE q.id IS NOT NULL 
+      GROUP BY s.id, s.name
+      ORDER BY s.name`,
+      [userId, userId]
+    );
 
+    return rows.map(row => ({
+      ...row,
+      average_score: row.average_score ? parseFloat(row.average_score).toFixed(2) : null,
+      weak_topics: row.weak_topics ? row.weak_topics.split(',').filter(topic => topic.trim() !== '') : [],
+    }));
+  }
+
+  static async getTimeBasedReport(timeframe = 'month') {
     let groupBy = '';
     let dateFormat = '';
     switch (timeframe) {
@@ -127,7 +130,6 @@ class QuizAttempt {
     const query = `SELECT DATE_FORMAT(created_at, '${dateFormat}') as period, AVG(percentage) as average_percentage, COUNT(id) as total_attempts FROM quiz_attempts GROUP BY ${groupBy} ORDER BY period ASC`;
     const [rows] = await pool.execute(query);
     
-    await redisClient.setEx(cacheKey, 3600, JSON.stringify(rows));
     return rows;
   }
 
