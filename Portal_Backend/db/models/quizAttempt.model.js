@@ -131,9 +131,28 @@ class QuizAttempt {
     return rows;
   }
 
+  // static async clearReportCaches() {
+  //   console.log("Clearing all quiz report caches...");
+  //   const keys = await redisClient.keys('report:*');
+  //   if (keys.length > 0) {
+  //     await redisClient.del(keys);
+  //     console.log(`Cleared ${keys.length} report caches.`);
+  //   } else {
+  //     console.log('No report caches to clear.');
+  //   }
+  // }
+
   static async clearReportCaches() {
     console.log("Clearing all quiz report caches...");
-    const keys = await redisClient.keys('report:*');
+    
+    let cursor = '0';
+    let keys = [];
+    do {
+      const [newCursor, scannedKeys] = await redisClient.scan(cursor, 'MATCH', 'report:*');
+      cursor = newCursor;
+      keys = keys.concat(scannedKeys);
+    } while (cursor !== '0'); 
+  
     if (keys.length > 0) {
       await redisClient.del(keys);
       console.log(`Cleared ${keys.length} report caches.`);
@@ -141,6 +160,7 @@ class QuizAttempt {
       console.log('No report caches to clear.');
     }
   }
+  
 }
 
 module.exports = QuizAttempt;
