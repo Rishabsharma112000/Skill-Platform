@@ -60,37 +60,6 @@ class User {
     return { data: rows, meta: { total, page: Number(page), limit: Number(limit) } };
   }
 
-  static async update(id, { name, email, password, role }) {
-    let query = 'UPDATE users SET';
-    const params = [];
-    const updates = [];
-
-    if (name) { updates.push('name = ?'); params.push(name); }
-    if (email) { updates.push('email = ?'); params.push(email); }
-    if (role) { updates.push('role = ?'); params.push(role); }
-    if (password !== undefined) { // Only hash if password is explicitly provided
-      let hashedPassword = null;
-      if (password) { // If password is provided and not null/empty, hash it
-        const salt = await bcrypt.genSalt(Number(BCRYPT_SALT_ROUNDS));
-        hashedPassword = await bcrypt.hash(password, salt);
-      }
-      updates.push('password = ?');
-      params.push(hashedPassword);
-    }
-
-    if (updates.length === 0) return null; 
-
-    query += ' ' + updates.join(', ') + ' WHERE id = ?';
-    params.push(id);
-
-    const [result] = await pool.execute(query, params);
-    return result.affectedRows > 0;
-  }
-
-  static async delete(id) {
-    const [result] = await pool.execute('DELETE FROM users WHERE id = ?', [id]);
-    return result.affectedRows > 0;
-  }
 }
 
 module.exports = User;

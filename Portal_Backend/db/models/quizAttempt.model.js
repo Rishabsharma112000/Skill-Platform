@@ -101,52 +101,6 @@ class QuizAttempt {
     return Object.values(usersPerformance);
   }
 
-  static async getSkillGapReport(userId) {
-    const [rows] = await pool.execute(
-      `SELECT
-        s.id as skill_id,
-        s.name as skill_name,
-        AVG(qa.score) as average_score,
-        COUNT(DISTINCT q.id) as total_questions_in_skill,
-        COUNT(DISTINCT CASE WHEN a.is_correct = TRUE THEN a.question_id ELSE NULL END) as correct_answers,
-        GROUP_CONCAT(DISTINCT CASE WHEN a.is_correct = FALSE THEN q.text ELSE NULL END) as weak_topics
-      FROM skills s
-      LEFT JOIN questions q ON s.id = q.skill_id
-      LEFT JOIN quiz_attempts qa ON s.id = qa.skill_id AND qa.user_id = ?
-      LEFT JOIN answers a ON qa.id = a.attempt_id AND a.user_id = ?
-      WHERE q.id IS NOT NULL 
-      GROUP BY s.id, s.name
-      ORDER BY s.name`,
-      [userId, userId]
-    );
-
-    return rows.map(row => ({
-      ...row,
-      average_score: row.average_score ? parseFloat(row.average_score).toFixed(2) : null,
-      weak_topics: row.weak_topics ? row.weak_topics.split(',').filter(topic => topic.trim() !== '') : [],
-    }));
-  }
-
-  static async getTimeBasedReport(timeframe = 'month') {
-    let groupBy = '';
-    let dateFormat = '';
-    switch (timeframe) {
-      case 'week':
-        groupBy = "DATE_FORMAT(created_at, '%Y-%v')";
-        dateFormat = '%Y-%v';
-        break;
-      case 'month':
-      default:
-        groupBy = "DATE_FORMAT(created_at, '%Y-%m')";
-        dateFormat = '%Y-%m';
-        break;
-    }
-
-    const query = `SELECT DATE_FORMAT(created_at, '${dateFormat}') as period, AVG(percentage) as average_percentage, COUNT(id) as total_attempts FROM quiz_attempts GROUP BY ${groupBy} ORDER BY period ASC`;
-    const [rows] = await pool.execute(query);
-    
-    return rows;
-  }
 
   // static async clearReportCaches() {
   //   console.log("Clearing all quiz report caches...");

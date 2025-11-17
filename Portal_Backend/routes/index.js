@@ -73,10 +73,6 @@ router.get('/reports/users/performance', auth, permit('admin'), reportCtrl.getAl
 // User: 
 router.get('/reports/me/performance', auth, reportCtrl.getUserPerformanceReport);
 
-// Admin: 
-router.get('/reports/skill-gap', auth, permit('admin'), reportCtrl.getSkillGapReport);
 
-// Admin: 
-router.get('/reports/time-based', auth, permit('admin'), reportCtrl.getTimeBasedReport);
 
 module.exports = router;

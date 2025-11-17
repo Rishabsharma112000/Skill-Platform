@@ -21,10 +21,6 @@ const reportService = {
     return usersPerformance;
   },
 
-  getSkillGapReport: async () => {
-    const report = await QuizAttempt.getSkillGapReport();
-    return report;
-  },
 
   getTimeBasedReport: async (timeframe) => {
     const report = await QuizAttempt.getTimeBasedReport(timeframe);

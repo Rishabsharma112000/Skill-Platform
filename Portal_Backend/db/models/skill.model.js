@@ -1,13 +1,6 @@
 const pool = require('../db');
 
 class Skill {
-  static async create({ name, description }) {
-    const [result] = await pool.execute(
-      'INSERT INTO skills (name, description) VALUES (?, ?)',
-      [name, description]
-    );
-    return { id: result.insertId, name, description };
-  }
 
   static async findById(id) {
     const [rows] = await pool.execute('SELECT * FROM skills WHERE id = ?', [id]);
@@ -87,27 +80,6 @@ class Skill {
     return { data: rows, meta: { total, page: Number(page), limit: Number(limit) } };
   }
 
-  static async update(id, { name, description }) {
-    let query = 'UPDATE skills SET';
-    const params = [];
-    const updates = [];
-
-    if (name) { updates.push('name = ?'); params.push(name); }
-    if (description) { updates.push('description = ?'); params.push(description); }
-
-    if (updates.length === 0) return null;
-
-    query += ' ' + updates.join(', ') + ' WHERE id = ?';
-    params.push(id);
-
-    const [result] = await pool.execute(query, params);
-    return result.affectedRows > 0;
-  }
-
-  static async delete(id) {
-    const [result] = await pool.execute('DELETE FROM skills WHERE id = ?', [id]);
-    return result.affectedRows > 0;
-  }
 }
 
 module.exports = Skill;
