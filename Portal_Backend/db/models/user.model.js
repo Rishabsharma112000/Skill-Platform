@@ -1,14 +1,17 @@
 const pool = require('../db');
-// const bcrypt = require('bcryptjs');
-// const { BCRYPT_SALT_ROUNDS = 10 } = process.env;
+const bcrypt = require('bcryptjs');
+const { BCRYPT_SALT_ROUNDS = 10 } = process.env;
 
 class User {
   static async create({ name, email, password, role = 'user' }) {
-    // const salt = await bcrypt.genSalt(Number(BCRYPT_SALT_ROUNDS));
-    // const hashedPassword = await bcrypt.hash(password, salt);
+    let hashedPassword = null;
+    if (password) {
+      const salt = await bcrypt.genSalt(Number(BCRYPT_SALT_ROUNDS));
+      hashedPassword = await bcrypt.hash(password, salt);
+    }
     const [result] = await pool.execute(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-      [name, email, password, role]
+      [name, email, hashedPassword, role]
     );
     return { id: result.insertId, name, email, role };
   }
@@ -68,9 +71,12 @@ class User {
     if (name) { updates.push('name = ?'); params.push(name); }
     if (email) { updates.push('email = ?'); params.push(email); }
     if (role) { updates.push('role = ?'); params.push(role); }
-    if (password) {
-      const salt = await bcrypt.genSalt(Number(BCRYPT_SALT_ROUNDS));
-      const hashedPassword = await bcrypt.hash(password, salt);
+    if (password !== undefined) { // Only hash if password is explicitly provided
+      let hashedPassword = null;
+      if (password) { // If password is provided and not null/empty, hash it
+        const salt = await bcrypt.genSalt(Number(BCRYPT_SALT_ROUNDS));
+        hashedPassword = await bcrypt.hash(password, salt);
+      }
       updates.push('password = ?');
       params.push(hashedPassword);
     }
