@@ -39,8 +39,6 @@ const quizService = {
       percentage
     });
 
-    await QuizAttempt.clearReportCaches();
-
     return attempt;
   },
 
