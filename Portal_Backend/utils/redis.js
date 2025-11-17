@@ -86,7 +86,10 @@ async function deleteCache(key) {
 async function deletePatternCache(pattern) {
   try {
     if (redisAvailable && client) {
-      const keys = await client.keys(pattern);
+      const keys = [];
+      for await (const key of client.scanIterator({ MATCH: pattern })) {
+        keys.push(key);
+      }
       if (keys.length > 0) await client.del(keys);
     } else {
       const regex = new RegExp(pattern.replace("*", ".*"));
