@@ -22,7 +22,12 @@ const authService = {
     if (!user) {
       throw new Error('Invalid credentials');
     }
+    console.log( user.password);
+    
     const ok = await User.comparePassword(password, user.password);
+    console.log("okay " , ok);
+
+    
     if (!ok) {
       throw new Error('Invalid password');
     }
