@@ -4,14 +4,11 @@ const { BCRYPT_SALT_ROUNDS = 10 } = process.env;
 
 class User {
   static async create({ name, email, password, role = 'user' }) {
-    let hashedPassword = null;
-    if (password) {
-      const salt = await bcrypt.genSalt(Number(BCRYPT_SALT_ROUNDS));
-      hashedPassword = await bcrypt.hash(password, salt);
-    }
+    // const salt = await bcrypt.genSalt(Number(BCRYPT_SALT_ROUNDS));
+    // const hashedPassword = await bcrypt.hash(password, salt);
     const [result] = await pool.execute(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-      [name, email, hashedPassword, role]
+      [name, email, password, role]
     );
     return { id: result.insertId, name, email, role };
   }
