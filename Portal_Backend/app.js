@@ -58,7 +58,12 @@ async function connectToDatabase() {
 async function startServer() {
   try {
     await connectToDatabase();
-    await initRedis();
+
+    try {
+      await initRedis();
+    } catch (redisErr) {
+      console.warn('Redis connection failed, continuing without Redis:', redisErr.message);
+    }
     
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (err) {
