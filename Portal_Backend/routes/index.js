@@ -69,7 +69,7 @@ router.post('/quizzes/attempt', auth, quizzesCtrl.submitAttempt);
 // REPORTS
 
 // Admin: 
-router.get('/reports/users/:userId/performance', auth, permit('admin'), reportCtrl.getUserPerformanceReport);
+router.get('/reports/users/performance', auth, permit('admin'), reportCtrl.getAllUsersPerformanceReport);
 // User: 
 router.get('/reports/me/performance', auth, reportCtrl.getUserPerformanceReport);
 

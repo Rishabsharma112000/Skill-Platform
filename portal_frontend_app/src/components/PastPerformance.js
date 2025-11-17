@@ -18,7 +18,10 @@ const PastPerformance = () => {
           },
         });
 
-        setAttempts(response.data); 
+        console.log("API Response:", response.data);
+
+        setAttempts(response.data.skillPerformance || []);
+
       } catch (err) {
         setError(err.response?.data?.message || err.message || 'Failed to fetch past attempts');
       } finally {
@@ -42,6 +45,7 @@ const PastPerformance = () => {
   return (
     <div>
       <h3>Past Performance</h3>
+
       {attempts.length > 0 ? (
         <table>
           <thead>
@@ -51,8 +55,8 @@ const PastPerformance = () => {
             </tr>
           </thead>
           <tbody>
-            {attempts.map((attempt) => (
-              <tr key={attempt.skill_name}>
+            {attempts.map((attempt, index) => (
+              <tr key={index}>
                 <td>{attempt.skill_name}</td>
                 <td>{parseFloat(attempt.average_percentage).toFixed(2)}%</td>
               </tr>

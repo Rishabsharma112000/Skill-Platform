@@ -16,6 +16,11 @@ const reportService = {
     return report;
   },
 
+  getAllUsersPerformanceReport: async () => {
+    const usersPerformance = await QuizAttempt.getAllUsersPerformance();
+    return usersPerformance;
+  },
+
   getSkillGapReport: async () => {
     const report = await QuizAttempt.getSkillGapReport();
     return report;

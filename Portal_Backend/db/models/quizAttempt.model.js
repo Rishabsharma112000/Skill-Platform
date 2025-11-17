@@ -71,19 +71,34 @@ class QuizAttempt {
 
   static async getUserPerformance(userId) {
     const [rows] = await pool.execute(
-      `SELECT
-        s.name as skill_name,
-        COUNT(qa.id) as total_quizzes,
-        SUM(CASE WHEN qa.passed = TRUE THEN 1 ELSE 0 END) as passed_quizzes,
-        AVG(qa.score) as average_score
-      FROM skills s
-      LEFT JOIN quiz_attempts qa ON s.id = qa.skill_id AND qa.user_id = ?
-      GROUP BY s.id
-      ORDER BY s.name`,
+      'SELECT s.name as skill_name, AVG(qa.percentage) as average_percentage FROM quiz_attempts qa JOIN skills s ON qa.skill_id = s.id WHERE qa.user_id = ? GROUP BY s.name',
       [userId]
     );
 
-    return rows;
+    return { skillPerformance: rows.map(row => ({ ...row, averageScore: row.average_percentage })) };
+  }
+
+  static async getAllUsersPerformance() {
+    const [rows] = await pool.execute(
+      'SELECT u.id as user_id, u.name as user_name, s.name as skill_name, AVG(qa.percentage) as average_percentage FROM quiz_attempts qa JOIN skills s ON qa.skill_id = s.id JOIN users u ON qa.user_id = u.id WHERE u.role = \'user\' GROUP BY u.id, u.name, s.name ORDER BY u.name, s.name'
+    );
+    
+    const usersPerformance = {};
+    rows.forEach(row => {
+      if (!usersPerformance[row.user_id]) {
+        usersPerformance[row.user_id] = {
+          id: row.user_id,
+          name: row.user_name,
+          skillPerformance: [],
+        };
+      }
+      usersPerformance[row.user_id].skillPerformance.push({
+        skillName: row.skill_name,
+        averagePercentage: parseFloat(row.average_percentage),
+      });
+    });
+    
+    return Object.values(usersPerformance);
   }
 
   static async getSkillGapReport(userId) {

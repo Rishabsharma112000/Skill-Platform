@@ -9,19 +9,12 @@ const API_ROUTES = {
   USERS: {
     GET_ALL: `${API_BASE_URL}/api/users`,
     GET_ME: `${API_BASE_URL}/api/users/me`,
-    UPDATE_ME: `${API_BASE_URL}/api/users/me`,
-    CHANGE_MY_PASSWORD: `${API_BASE_URL}/api/users/me/password`,
-    GET_BY_ID: (id) => `${API_BASE_URL}/api/users/${id}`,
-    UPDATE_BY_ID: (id) => `${API_BASE_URL}/api/users/${id}`,
-    DELETE_BY_ID: (id) => `${API_BASE_URL}/api/users/${id}`,
   },
   SKILLS: {
     CREATE: `${API_BASE_URL}/api/skills`,
     GET_ALL: `${API_BASE_URL}/api/skills`,
     GET_WITH_QUESTIONS: `${API_BASE_URL}/api/skills-with-questions`,
     GET_BY_ID: (id) => `${API_BASE_URL}/api/skills/${id}`,
-    UPDATE_BY_ID: (id) => `${API_BASE_URL}/api/skills/${id}`,
-    DELETE_BY_ID: (id) => `${API_BASE_URL}/api/skills/${id}`,
   },
   QUESTIONS: {
     CREATE: `${API_BASE_URL}/api/questions`,
@@ -33,13 +26,11 @@ const API_ROUTES = {
   QUIZZES: {
     START: (skillId) => `${API_BASE_URL}/api/skills/${skillId}/quiz`,
     SUBMIT_ATTEMPT: `${API_BASE_URL}/api/quizzes/attempt`,
-    GET_HISTORY: `${API_BASE_URL}/api/quizzes/history`,
   },
   REPORTS: {
     GET_USER_PERFORMANCE: (userId) => `${API_BASE_URL}/api/reports/users/${userId}/performance`,
     GET_MY_PERFORMANCE: `${API_BASE_URL}/api/reports/me/performance`,
-    GET_SKILL_GAP: `${API_BASE_URL}/api/reports/skill-gap`,
-    GET_TIME_BASED: `${API_BASE_URL}/api/reports/time-based`,
+    GET_ALL_USER_PERFORMANCE: `${API_BASE_URL}/api/reports/users/performance`,
   },
 };
 
