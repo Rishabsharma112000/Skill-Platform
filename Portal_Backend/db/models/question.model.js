@@ -30,47 +30,26 @@ class Question {
     return { ...questions[0], options };
   }
 
-  static async findAll({ page = 1, limit = 10, skillId, difficulty, q }) {
+  static async findAll({ skillId, difficulty, limit, offset }) {
     let query = 'SELECT q.*, s.name as skill_name, u.name as created_by_name FROM questions q LEFT JOIN skills s ON q.skill_id = s.id LEFT JOIN users u ON q.created_by = u.id WHERE 1=1';
-    let countQuery = 'SELECT COUNT(*) as count FROM questions q WHERE 1=1';
     const params = [];
-    const countParams = [];
 
-    if (skillId) { 
-      query += ' AND q.skill_id = ?'; 
-      countQuery += ' AND q.skill_id = ?'; 
-      params.push(skillId);
-      countParams.push(skillId);
+    if (skillId) { query += ' AND q.skill_id = ?'; params.push(skillId); }
+    if (difficulty) { query += ' AND q.difficulty = ?'; params.push(difficulty); }
+
+    const offsetVal = offset ? Number(offset) : 0;
+    if (limit) {
+      query += ` LIMIT ${offsetVal}, ${Number(limit)}`;
     }
-    if (difficulty) { 
-      query += ' AND q.difficulty = ?'; 
-      countQuery += ' AND q.difficulty = ?'; 
-      params.push(difficulty);
-      countParams.push(difficulty);
-    }
-    if (q) { 
-      query += ' AND q.text LIKE ?'; 
-      countQuery += ' AND q.text LIKE ?'; 
-      params.push(`%${q}%`);
-      countParams.push(`%${q}%`);
-    }
-
-
-    query += ' ORDER BY q.created_at DESC';
-
-    const offset = (page - 1) * limit;
-    query += ` LIMIT ${Number(offset)}, ${Number(limit)}`;
 
     const [questions] = await pool.execute(query, params);
-    const [countRows] = await pool.execute(countQuery, countParams);
-    const total = countRows[0].count;
 
     const questionsWithOptions = await Promise.all(questions.map(async question => {
       const [options] = await pool.execute('SELECT id, text, is_correct FROM options WHERE question_id = ?', [question.id]);
       return { ...question, options };
     }));
 
-    return { data: questionsWithOptions, meta: { total, page: Number(page), limit: Number(limit) } };
+    return questionsWithOptions;
   }
 
   static async update(id, { skill_id, text, options, difficulty, created_by }) {
